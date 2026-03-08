@@ -1,4 +1,6 @@
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Template class for Amazon OA — "Total Requests Served" problem.
@@ -58,19 +60,36 @@ public class GetTotalRequests {
      * @return array of total requests per day
      */
     public static int[] getTotalRequests(int[] server, int[] replaceId, int[] newId) {
-        int[] totalRequests = new int[replaceId.length];
-        for (int i = 0; i < replaceId.length; i++) {
-            for (int j = 0; j < server.length; j++) {
-                if (server[j] == replaceId[i]) {
-                    server[j] = newId[i];
-                }
-            }
-            int sum = 0;
-            for (int s : server) {
-                sum += s;
-            }
-            totalRequests[i] = sum;
+        int n = replaceId.length;
+        int[] totalRequests = new int[n];
+
+        // Step 1: Build frequency map and compute initial total sum
+        Map<Integer, Integer> freqMap = new HashMap<>();
+        int totalSum = 0;
+        for (int id : server) {
+            freqMap.merge(id, 1, Integer::sum);
+            totalSum += id;
         }
+
+        // Step 2: Process each day in O(1)
+        for (int i = 0; i < n; i++) {
+            int oldId = replaceId[i];
+            int newIdVal = newId[i];
+            int count = freqMap.getOrDefault(oldId, 0);
+
+            if (count > 0 && oldId != newIdVal) {
+                // Remove old contribution, add new contribution
+                totalSum -= oldId * count;
+                totalSum += newIdVal * count;
+
+                // Update frequency map
+                freqMap.remove(oldId);
+                freqMap.merge(newIdVal, count, Integer::sum);
+            }
+
+            totalRequests[i] = totalSum;
+        }
+
         return totalRequests;
     }
 
