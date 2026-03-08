@@ -92,6 +92,16 @@ public class OptimizeReservedConcurrency {
             failed++;
         }
     }
+    /**
+     * 
+i	c	nextFree	c < nextFree?	bumps	cost	totalCost
+0	2	MIN	no	0	0	0
+1	3	3	no	0	0	0
+2	3	4	yes (3<4)	4−3=1	1×6=6	6
+3	5	5	no	0	0	6
+4	5	6	yes (5<6)	6−5=1	1×3=3	9 ✅
+     * @param args
+     */
 
     public static void main(String[] args) {
         System.out.println("Running sample test cases...\n");
